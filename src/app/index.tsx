@@ -4,7 +4,7 @@ import { ChangeEvent, useState } from 'react';
 import { useStartSend } from '../shared/hooks';
 
 function App() {
-  const [inputValue, setInputValue] = useState(1);
+  const [inputValue, setInputValue] = useState(10);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => setInputValue(+e.target.value);
 
   const { isLoading, onSend, items } = useStartSend();
@@ -17,8 +17,6 @@ function App() {
 
     await onSend(limit);
   };
-
-  console.log({ items });
 
   return (
     <Layout>

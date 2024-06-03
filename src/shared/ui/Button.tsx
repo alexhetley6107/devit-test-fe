@@ -9,7 +9,7 @@ interface Props extends ButtonProps {
 export const Button: FC<Props> = ({ loading, ...props }) => {
   return (
     <MuiButton {...props} variant="contained">
-      {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'START'}
+      {loading ? <CircularProgress size={24} sx={{ color: 'blue' }} /> : 'START'}
     </MuiButton>
   );
 };

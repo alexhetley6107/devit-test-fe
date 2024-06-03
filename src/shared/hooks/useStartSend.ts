@@ -1,36 +1,37 @@
 import { useState } from 'react';
-import { REQUEST_AMOUNT } from '../constants';
+import { MAX_REQUEST_AMOUNT } from '../constants';
 import { axiosBase } from '../axios';
 
 export const useStartSend = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [items, setItems] = useState<number[]>([]);
+  const [items, setItems] = useState<Array<number | null>>([]);
 
   const onSend = async (limit: number) => {
+    setItems([]);
     setIsLoading(true);
 
-    try {
-      const promises = [];
-      console.log(limit);
+    const iterationsLength = Math.ceil(MAX_REQUEST_AMOUNT / limit);
+    const lastIterationRequestsAmount = MAX_REQUEST_AMOUNT % limit;
 
-      for (let i = 1; i <= REQUEST_AMOUNT; i++) {
-        const promise = axiosBase.get(`/api?itemRef=${i}`);
+    let requestIndex = 0;
+    for (let i = 1; i <= iterationsLength; i++) {
+      const amount = lastIterationRequestsAmount && i === iterationsLength ? lastIterationRequestsAmount : limit;
+
+      const promises = [];
+
+      for (let j = 1; j <= amount; j++) {
+        requestIndex += 1;
+        const promise = axiosBase
+          .get(`/api?itemRef=${requestIndex}`)
+          .then((data) => setItems((prev) => [data.data, ...prev]))
+          .catch(() => setItems((prev) => [null, ...prev]));
         promises.push(promise);
       }
 
-      const responses = await Promise.all(promises);
-      if (responses) {
-        const reses = responses.map((r) => r.data as number);
-
-        setItems(reses);
-      }
-
-      console.log('responses', responses);
-    } catch (error) {
-      console.log('error', error);
-    } finally {
-      setIsLoading(false);
+      await Promise.allSettled(promises);
     }
+
+    setIsLoading(false);
   };
 
   return { isLoading, onSend, items };
