@@ -7,7 +7,7 @@ interface Props {
 
 export const Item: FC<Props> = ({ number }) => {
   return (
-    <Paper elevation={3} sx={{ p: 2 }}>
+    <Paper elevation={3} sx={{ p: 1 }}>
       {number}
     </Paper>
   );

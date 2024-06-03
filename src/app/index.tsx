@@ -1,33 +1,24 @@
 import { Paper, Stack } from '@mui/material';
-import { Layout, Input, Button, Item } from '../shared/ui';
+import { Layout, Input, Button, Table } from '../shared/ui';
 import { ChangeEvent, useState } from 'react';
-import { axiosBase } from '../shared/axios';
-import { REQUEST_AMOUNT } from '../shared/constants';
+import { useStartSend } from '../shared/hooks';
 
 function App() {
   const [inputValue, setInputValue] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => setInputValue(+e.target.value);
 
+  const { isLoading, onSend, items } = useStartSend();
+
   const handleStart = async () => {
-    setIsLoading(true);
-    try {
-      const promises = [];
+    let limit = inputValue;
+    if (limit < 1) limit = 1;
+    if (limit > 100) limit = 100;
+    setInputValue(limit);
 
-      for (let i = 1; i <= REQUEST_AMOUNT; i++) {
-        const promise = axiosBase.get(`/api?itemRef=${i}`);
-        promises.push(promise);
-      }
-
-      const responses = await Promise.all(promises);
-
-      console.log('responses', responses);
-    } catch (error) {
-      console.log('error', error);
-    } finally {
-      setIsLoading(false);
-    }
+    await onSend(limit);
   };
+
+  console.log({ items });
 
   return (
     <Layout>
@@ -38,13 +29,8 @@ function App() {
         </Stack>
       </Paper>
 
-      <Stack flexGrow={1} spacing={2}>
-        <Item number={1} />
-        <Item number={1} />
-        <Item number={1} />
-        <Item number={1} />
-        <Item number={1} />
-        <Item number={1} />
+      <Stack flexGrow={1}>
+        <Table items={items} />
       </Stack>
     </Layout>
   );

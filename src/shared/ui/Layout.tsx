@@ -6,7 +6,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
     <>
       <CssBaseline />
       <Container>
-        <Stack direction="row" p="20px" spacing={2}>
+        <Stack direction="row" p="20px" spacing={2} alignItems={'flex-start'}>
           {children}
         </Stack>
       </Container>
